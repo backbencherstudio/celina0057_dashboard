@@ -110,7 +110,7 @@ export default function UploadModal({
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter food name"
+              placeholder="Enter category name"
               className="mt-1 text-sm lg:text-base"
             />
           </div>

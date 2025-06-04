@@ -4,7 +4,16 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ChevronLeft, ChevronRight, Loader2, Trash2, AlertTriangle } from "lucide-react"
+import {
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Trash2,
+  AlertTriangle,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,11 +42,17 @@ export default function FeedbackPage() {
       case "oldest":
         setFeedbackSort("createdAt", "asc")
         break
-      case "name":
+      case "name-asc":
         setFeedbackSort("name", "asc")
         break
-      case "email":
+      case "name-desc":
+        setFeedbackSort("name", "desc")
+        break
+      case "email-asc":
         setFeedbackSort("email", "asc")
+        break
+      case "email-desc":
+        setFeedbackSort("email", "desc")
         break
     }
   }
@@ -62,9 +77,30 @@ export default function FeedbackPage() {
   const getSortValue = () => {
     if (sortBy === "createdAt" && order === "desc") return "newest"
     if (sortBy === "createdAt" && order === "asc") return "oldest"
-    if (sortBy === "name") return "name"
-    if (sortBy === "email") return "email"
+    if (sortBy === "name" && order === "asc") return "name-asc"
+    if (sortBy === "name" && order === "desc") return "name-desc"
+    if (sortBy === "email" && order === "asc") return "email-asc"
+    if (sortBy === "email" && order === "desc") return "email-desc"
     return "newest"
+  }
+
+  const getSortIcon = (column: string) => {
+    if (sortBy !== column) return <ArrowUpDown className="h-4 w-4 text-gray-400" />
+    return order === "asc" ? (
+      <ArrowUp className="h-4 w-4 text-gray-600" />
+    ) : (
+      <ArrowDown className="h-4 w-4 text-gray-600" />
+    )
+  }
+
+  const handleColumnSort = (column: string) => {
+    if (sortBy === column) {
+      // Toggle order if same column
+      setFeedbackSort(column, order === "asc" ? "desc" : "asc")
+    } else {
+      // Set new column with default desc order
+      setFeedbackSort(column, "desc")
+    }
   }
 
   return (
@@ -73,14 +109,16 @@ export default function FeedbackPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-4">
           <h3 className="text-lg lg:text-xl font-semibold text-gray-900">Feedback</h3>
           <Select value={getSortValue()} onValueChange={handleSortChange}>
-            <SelectTrigger className="w-full sm:w-32">
+            <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Sort By" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="newest">Newest</SelectItem>
-              <SelectItem value="oldest">Oldest</SelectItem>
-              <SelectItem value="name">Name</SelectItem>
-              <SelectItem value="email">Email</SelectItem>
+              <SelectItem value="newest">Newest First</SelectItem>
+              <SelectItem value="oldest">Oldest First</SelectItem>
+              <SelectItem value="name-asc">Name A-Z</SelectItem>
+              <SelectItem value="name-desc">Name Z-A</SelectItem>
+              <SelectItem value="email-asc">Email A-Z</SelectItem>
+              <SelectItem value="email-desc">Email Z-A</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -109,14 +147,32 @@ export default function FeedbackPage() {
                       <TableHead className="text-gray-600 font-medium py-3 lg:py-4 px-3 lg:px-6 min-w-[200px] lg:min-w-[300px]">
                         Feedbacks Given
                       </TableHead>
-                      <TableHead className="text-gray-600 font-medium py-3 lg:py-4 px-3 lg:px-6 min-w-[150px]">
-                        E-mail
+                      <TableHead
+                        className="text-gray-600 font-medium py-3 lg:py-4 px-3 lg:px-6 min-w-[150px] cursor-pointer hover:bg-gray-50"
+                        onClick={() => handleColumnSort("email")}
+                      >
+                        <div className="flex items-center space-x-1">
+                          <span>E-mail</span>
+                          {getSortIcon("email")}
+                        </div>
                       </TableHead>
-                      <TableHead className="text-gray-600 font-medium py-3 lg:py-4 px-3 lg:px-6 min-w-[100px]">
-                        Name
+                      <TableHead
+                        className="text-gray-600 font-medium py-3 lg:py-4 px-3 lg:px-6 min-w-[100px] cursor-pointer hover:bg-gray-50"
+                        onClick={() => handleColumnSort("name")}
+                      >
+                        <div className="flex items-center space-x-1">
+                          <span>Name</span>
+                          {getSortIcon("name")}
+                        </div>
                       </TableHead>
-                      <TableHead className="text-gray-600 font-medium py-3 lg:py-4 px-3 lg:px-6 min-w-[100px]">
-                        Date
+                      <TableHead
+                        className="text-gray-600 font-medium py-3 lg:py-4 px-3 lg:px-6 min-w-[100px] cursor-pointer hover:bg-gray-50"
+                        onClick={() => handleColumnSort("createdAt")}
+                      >
+                        <div className="flex items-center space-x-1">
+                          <span>Date</span>
+                          {getSortIcon("createdAt")}
+                        </div>
                       </TableHead>
                       <TableHead className="text-gray-600 font-medium py-3 lg:py-4 px-3 lg:px-6 w-[80px]">
                         Actions
@@ -192,7 +248,17 @@ export default function FeedbackPage() {
 
               <div className="flex items-center space-x-1">
                 {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                  const page = i + 1
+                  let page: number
+                  if (pagination.totalPages <= 5) {
+                    page = i + 1
+                  } else if (pagination.currentPage <= 3) {
+                    page = i + 1
+                  } else if (pagination.currentPage >= pagination.totalPages - 2) {
+                    page = pagination.totalPages - 4 + i
+                  } else {
+                    page = pagination.currentPage - 2 + i
+                  }
+
                   return (
                     <Button
                       key={page}
@@ -209,7 +275,7 @@ export default function FeedbackPage() {
                     </Button>
                   )
                 })}
-                {pagination.totalPages > 5 && (
+                {pagination.totalPages > 5 && pagination.currentPage < pagination.totalPages - 2 && (
                   <>
                     <span className="text-gray-400 px-2 text-xs lg:text-sm">...</span>
                     <Button

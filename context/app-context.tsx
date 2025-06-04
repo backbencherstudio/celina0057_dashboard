@@ -84,7 +84,7 @@ const initialState: AppState = {
       currentPage: 1,
       totalPages: 1,
       total: 0,
-      limit: 24, // Changed to 24 for better grid layout
+      limit: 24,
     },
     lastFetch: null,
     selectedCategory: "CRAVINGS",
@@ -179,7 +179,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
           ...state.foods,
           selectedCategory: action.payload,
           pagination: { ...state.foods.pagination, currentPage: 1 },
-          lastFetch: null, // Force refetch when category changes
+          lastFetch: null,
         },
       }
     case "FOODS_SET_PAGE":
@@ -188,7 +188,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
         foods: {
           ...state.foods,
           pagination: { ...state.foods.pagination, currentPage: action.payload },
-          lastFetch: null, // Force refetch when page changes
+          lastFetch: null,
         },
       }
     case "FOODS_SET_LIMIT":
@@ -197,7 +197,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
         foods: {
           ...state.foods,
           pagination: { ...state.foods.pagination, limit: action.payload, currentPage: 1 },
-          lastFetch: null, // Force refetch when limit changes
+          lastFetch: null,
         },
       }
 
@@ -247,6 +247,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
         feedback: {
           ...state.feedback,
           pagination: { ...state.feedback.pagination, currentPage: action.payload },
+          lastFetch: null, // Force refetch when page changes
         },
       }
     case "FEEDBACK_SET_SORT":
@@ -257,7 +258,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
           sortBy: action.payload.sortBy,
           order: action.payload.order,
           pagination: { ...state.feedback.pagination, currentPage: 1 },
-          lastFetch: null, // Force refetch when sort changes
+          lastFetch: null,
         },
       }
     case "FEEDBACK_SET_LIMIT":
@@ -266,7 +267,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
         feedback: {
           ...state.feedback,
           pagination: { ...state.feedback.pagination, limit: action.payload, currentPage: 1 },
-          lastFetch: null, // Force refetch when limit changes
+          lastFetch: null,
         },
       }
 
@@ -348,14 +349,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const setFeedbackPage = useCallback((page: number) => {
+    console.log("Setting feedback page to:", page)
     dispatch({ type: "FEEDBACK_SET_PAGE", payload: page })
   }, [])
 
   const setFeedbackSort = useCallback((sortBy: string, order: "asc" | "desc") => {
+    console.log("Setting feedback sort:", { sortBy, order })
     dispatch({ type: "FEEDBACK_SET_SORT", payload: { sortBy, order } })
   }, [])
 
   const setFeedbackLimit = useCallback((limit: number) => {
+    console.log("Setting feedback limit to:", limit)
     dispatch({ type: "FEEDBACK_SET_LIMIT", payload: limit })
   }, [])
 

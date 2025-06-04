@@ -32,7 +32,17 @@ export function useFeedback() {
       dispatch({ type: "FEEDBACK_LOADING" })
 
       try {
+        console.log("Fetching feedback with params:", {
+          page: pagination.currentPage,
+          limit: pagination.limit,
+          sortBy,
+          order,
+        })
+
         const response = await getFeedbacks(pagination.currentPage, pagination.limit, sortBy, order, token)
+
+        console.log("Feedback API response:", response)
+
         dispatch({
           type: "FEEDBACK_SUCCESS",
           payload: {
