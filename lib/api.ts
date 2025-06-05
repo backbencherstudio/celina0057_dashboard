@@ -1,7 +1,7 @@
 import axios from "axios"
 import type { Food, Feedback, LoginResponse, UpdateAdminResponse, FoodsResponse, FeedbackResponse } from "./types"
 
-const API_BASE_URL = "https://cure-marriage-thinkpad-perfume.trycloudflare.com"
+const API_BASE_URL = "https://celina0057backend.signalsmind.com"
 
 // Create axios instance with default config
 const api = axios.create({
