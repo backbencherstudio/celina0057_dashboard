@@ -24,7 +24,7 @@ export default function UploadModal({
   onUpload,
   initialName = "",
   title = "Upload File",
-  submitLabel = "Ban",
+  submitLabel = "save",
 }: UploadModalProps) {
   const [name, setName] = useState(initialName)
   const [file, setFile] = useState<File | null>(null)
